@@ -90,11 +90,14 @@ struct Parser {
     }
 
     ASTNode* parseQuantifier() {
-        if (check(TokenType.UNIVERSAL) || check(TokenType.EXISTENTIAL)) {
-            // just do nothing for now
-            consume();
-            consume();
-            return parseNegation();
+        if (check(TokenType.UNIVERSAL)) {
+            Token t = consume();
+            ASTNode* inner = parseNegation();
+            return new ASTNode(NodeType.Universal, t.literal, inner, null);
+        } else if (check(TokenType.EXISTENTIAL)) {
+            Token t = consume();
+            ASTNode* inner = parseNegation();
+            return new ASTNode(NodeType.Existential, t.literal, inner, null);
         }
         return parsePrimary();
     }
@@ -123,13 +126,10 @@ struct Parser {
             return node;
         }
 
-        if (t.tt == TokenType.UNIVERSAL || t.tt == TokenType.EXISTENTIAL) {
-            dstring variable  = t.literal;
-            ASTNode* body     = parseBiconditional();
-            NodeType nt       = t.tt == TokenType.UNIVERSAL ? NodeType.Universal : NodeType.Existential;
-            return new ASTNode(nt, variable, body, null);
-        }
-
         assert(false, "Unexpected token: " ~ cast(string)t.literal);
     }
+}
+
+unittest {
+    // todo
 }

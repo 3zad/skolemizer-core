@@ -22,6 +22,8 @@ public struct ASTNode {
             return format("ASTNode[ type: %s, value: %s, args: [%s] ]", type, value, argsStr);
         } else if (type == NodeType.Negation) {
             return format("ASTNode[ type: %s, operand: %s ]", type, left.toString());
+        } else if (type == NodeType.Universal || type == NodeType.Existential) {
+            return format("ASTNode[ type: %s, variable: %s, body: %s ]", type, value, left.toString());
         } else {
             return format("ASTNode[ type: %s, left: %s, right: %s ]", type, left.toString(), right.toString());
         }

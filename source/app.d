@@ -13,8 +13,10 @@ void main()
 {
 	string f = cast(string)read("input.txt");
 	auto lexer = new Lexer(f);
-	auto parser = Parser(lexer.tokenize());
+	auto ts = lexer.tokenize();
+	auto parser = Parser(ts);
 	auto ast = parser.parse();
+
 	writeToFile("ast.txt", ast);
 
 	auto sAST = *(skolemizeNode(ast));
@@ -52,16 +54,24 @@ dstring toFormulaString(ASTNode* node, dstring result = "")
 				result ~= " not ";
 				break;
 			case NodeType.Universal:
-				result ~= "A";
+				result ~= "A"d~node.value;
 				break;
 			case NodeType.Existential:
-				result ~= "E";
+				result ~= "E"d~node.value;
 				break;
 			case NodeType.Variable:
 				result ~= node.value;
 				break;
 			case NodeType.Predicate:
-				result ~= node.value;
+				dstring argsStr;
+				foreach (arg; node.args) {
+					argsStr ~= toFormulaString(arg) ~ ", ";
+				}
+				// remove trailing comma and space
+				if (argsStr.length >= 2) {
+					argsStr = argsStr[0 .. $ - 2];
+				}
+				result ~= node.value ~ "(" ~ argsStr ~ ")";
 				break;
 			default:
 				break;

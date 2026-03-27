@@ -69,6 +69,16 @@ class Lexer {
         return formula[startPosition .. position];
     }
 
+    dstring readQuantifierIdentifier()
+    {
+        int startPosition = position;
+        readChar();
+        while (isLowercaseLetter(ch)) {
+            readChar();
+        }
+        return formula[startPosition+1 .. position];
+    }
+
     dstring readPredicate()
     {
         int startPosition = position;
@@ -103,12 +113,6 @@ class Lexer {
             case '!':
                 tok = newToken(TokenType.NEGATION, "!");
                 break;
-            case 'A':
-                tok = newToken(TokenType.UNIVERSAL, "A");
-                break;
-            case 'E':
-                tok = newToken(TokenType.EXISTENTIAL, "E");
-                break;
             case '(':
                 tok = newToken(TokenType.LPAREN, "(");
                 break;
@@ -122,6 +126,11 @@ class Lexer {
                 if (isLowercaseLetter(ch)) {
                     dstring literal = readIdentifier();
                     TokenType tt = TokenType.VARIABLE;
+                    return newToken(tt, literal);
+                } else if (ch == 'E' || ch == 'A') {
+                    dchar quantifier = ch;
+                    dstring literal = readQuantifierIdentifier();
+                    TokenType tt = quantifier == 'E' ? TokenType.EXISTENTIAL : TokenType.UNIVERSAL;
                     return newToken(tt, literal);
                 } else if (isUppercaseLetter(ch)) {
                     dstring literal = readPredicate();
@@ -146,4 +155,30 @@ class Lexer {
         } while (tok.tt != TokenType.EOF);
         return tokens;
     }
+}
+
+unittest {
+    Lexer lexer = new Lexer("Ax (P(x) > Ey Q(y))");
+    auto tokens = lexer.tokenize();
+    assert(tokens[0].tt == TokenType.UNIVERSAL && tokens[0].literal == "x");
+    assert(tokens[1].tt == TokenType.LPAREN && tokens[1].literal == "(");
+    assert(tokens[2].tt == TokenType.PREDICATE && tokens[2].literal == "P");
+    assert(tokens[3].tt == TokenType.LPAREN && tokens[3].literal == "(");
+    assert(tokens[4].tt == TokenType.VARIABLE && tokens[4].literal == "x");
+    assert(tokens[5].tt == TokenType.RPAREN && tokens[5].literal == ")");
+    assert(tokens[6].tt == TokenType.IMPLICATION && tokens[6].literal == ">");
+    assert(tokens[7].tt == TokenType.EXISTENTIAL && tokens[7].literal == "y");
+    assert(tokens[8].tt == TokenType.PREDICATE && tokens[8].literal == "Q");
+    assert(tokens[9].tt == TokenType.LPAREN && tokens[9].literal == "(");
+    assert(tokens[10].tt == TokenType.VARIABLE && tokens[10].literal == "y");
+    assert(tokens[11].tt == TokenType.RPAREN && tokens[11].literal == ")");
+    assert(tokens[12].tt == TokenType.RPAREN && tokens[12].literal == ")");
+
+    Lexer lexer2 = new Lexer("a > b > a");
+    auto tokens2 = lexer2.tokenize();
+    assert(tokens2[0].tt == TokenType.VARIABLE && tokens2[0].literal == "a");
+    assert(tokens2[1].tt == TokenType.IMPLICATION && tokens2[1].literal == ">");
+    assert(tokens2[2].tt == TokenType.VARIABLE && tokens2[2].literal == "b");
+    assert(tokens2[3].tt == TokenType.IMPLICATION && tokens2[3].literal == ">");
+    assert(tokens2[4].tt == TokenType.VARIABLE && tokens2[4].literal == "a");
 }

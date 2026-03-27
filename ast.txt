@@ -1,11 +1,19 @@
 ASTNode[
 	 type: Implication, left: ASTNode[
-		 type: Variable, value: a 
+		 type: Universal, variable: x, body: ASTNode[
+			 type: Predicate, value: P, args: [
+				ASTNode[
+					 type: Variable, value: x 
+				], 
+			] 
+		] 
 	], right: ASTNode[
-		 type: Implication, left: ASTNode[
-			 type: Variable, value: b 
-		], right: ASTNode[
-			 type: Variable, value: a 
+		 type: Existential, variable: x, body: ASTNode[
+			 type: Predicate, value: P, args: [
+				ASTNode[
+					 type: Variable, value: x 
+				], 
+			] 
 		] 
 	] 
 ]
