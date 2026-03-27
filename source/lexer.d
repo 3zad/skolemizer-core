@@ -50,15 +50,29 @@ class Lexer {
         return Token(tt, literal);
     }
 
-    bool isLetter(dchar ch)
+    bool isLowercaseLetter(dchar ch)
     {
-        return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+        return (ch >= 'a' && ch <= 'z');
+    }
+
+    bool isUppercaseLetter(dchar ch)
+    {
+        return (ch >= 'A' && ch <= 'Z');
     }
 
     dstring readIdentifier()
     {
         int startPosition = position;
-        while (isLetter(ch)) {
+        while (isLowercaseLetter(ch)) {
+            readChar();
+        }
+        return formula[startPosition .. position];
+    }
+
+    dstring readPredicate()
+    {
+        int startPosition = position;
+        while (isUppercaseLetter(ch) || (ch >= '0' && ch <= '9')) {
             readChar();
         }
         return formula[startPosition .. position];
@@ -101,10 +115,17 @@ class Lexer {
             case ')':
                 tok = newToken(TokenType.RPAREN, ")");
                 break;
+            case ',':
+                tok = newToken(TokenType.COMMA, ",");
+                break;
             default:
-                if (isLetter(ch)) {
+                if (isLowercaseLetter(ch)) {
                     dstring literal = readIdentifier();
                     TokenType tt = TokenType.VARIABLE;
+                    return newToken(tt, literal);
+                } else if (isUppercaseLetter(ch)) {
+                    dstring literal = readPredicate();
+                    TokenType tt = TokenType.PREDICATE;
                     return newToken(tt, literal);
                 } else {
                     tok = newToken(TokenType.ILLEGAL, ch.to!dstring);

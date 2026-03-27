@@ -3,6 +3,8 @@ module parser;
 import token;
 import model;
 
+import std.stdio;
+
 // order of operations: Negation > Conjunction > Disjunction > Implication > Biconditional
 struct Parser {
     Token[] tokens;
@@ -63,11 +65,38 @@ struct Parser {
         return left;
     }
 
+    ASTNode* parsePredicate(dstring name) {
+        consume();
+        ASTNode*[] args;
+
+        while (!check(TokenType.RPAREN)) {
+            Token t = consume();
+            args ~= new ASTNode(NodeType.Variable, t.literal, null, null);
+            if (check(TokenType.COMMA)) consume();
+        }
+        consume();
+
+        // Store args as a linked list via left/right, or add an args field to ASTNode
+        ASTNode* node = new ASTNode(NodeType.Predicate, name, null, null);
+        node.args = args;
+        return node;
+    }
+
     ASTNode* parseNegation() {
         if (check(TokenType.NEGATION)) {
             consume();
             ASTNode* operand = parseNegation();
             return new ASTNode(NodeType.Negation, ""d, operand, null);
+        }
+        return parseQuantifier();
+    }
+
+    ASTNode* parseQuantifier() {
+        if (check(TokenType.UNIVERSAL) || check(TokenType.EXISTENTIAL)) {
+            // just do nothing for now
+            consume();
+            consume();
+            return parseNegation();
         }
         return parsePrimary();
     }
@@ -82,8 +111,26 @@ struct Parser {
 
         Token t = consume();
 
-        if (t.tt == TokenType.VARIABLE || t.tt == TokenType.UNIVERSAL)
+        if (t.tt == TokenType.VARIABLE) {
             return new ASTNode(NodeType.Variable, t.literal, null, null);
+        }
+
+        if (t.tt == TokenType.PREDICATE) {
+            if (check(TokenType.LPAREN)) {
+                return parsePredicate(t.literal); // has args: P(x,y)
+            }
+            // bare predicate with no args: P
+            ASTNode* node = new ASTNode(NodeType.Predicate, t.literal, null, null);
+            node.args = [];
+            return node;
+        }
+
+        if (t.tt == TokenType.UNIVERSAL || t.tt == TokenType.EXISTENTIAL) {
+            dstring variable  = t.literal;
+            ASTNode* body     = parseBiconditional();
+            NodeType nt       = t.tt == TokenType.UNIVERSAL ? NodeType.Universal : NodeType.Existential;
+            return new ASTNode(nt, variable, body, null);
+        }
 
         assert(false, "Unexpected token: " ~ cast(string)t.literal);
     }

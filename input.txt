@@ -1,1 +1,1 @@
-!(A|B)
+AxEyAz(P(x,y,z))

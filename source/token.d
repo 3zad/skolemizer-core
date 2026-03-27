@@ -14,9 +14,11 @@ public enum TokenType {
     EXISTENTIAL = "EXISTENTIAL",
 
     VARIABLE = "VARIABLE",
+    PREDICATE = "PREDICATE",
 
     LPAREN = "LPAREN",
     RPAREN = "RPAREN",
+    COMMA = "COMMA",
 }
 
 public struct Token {
