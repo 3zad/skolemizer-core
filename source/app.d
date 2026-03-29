@@ -84,6 +84,16 @@ dstring toFormulaString(ASTNode* node, dstring result = "")
 				}
 				result ~= node.value ~ "(" ~ skolemArgsStr ~ ")";
 				break;
+			case NodeType.Function:
+				dstring funcArgsStr;
+				foreach (arg; node.args) {
+					funcArgsStr ~= toFormulaString(arg) ~ ", ";
+				}
+				if (funcArgsStr.length >= 2) {
+					funcArgsStr = funcArgsStr[0 .. $ - 2];
+				}
+				result ~= node.value ~ "(" ~ funcArgsStr ~ ")";
+				break;
 			default:
 				break;
 		}
@@ -91,7 +101,18 @@ dstring toFormulaString(ASTNode* node, dstring result = "")
 		result ~= toFormulaString(node.right);
 	}
 
-	return result;
+	if (result.length < 2) {
+		return result;
+	}
+
+	// remove leading and trailing parenthesis
+	int depth = 0;
+	while (result[depth] == '(')
+	{
+		depth++;
+	}
+
+	return result[depth..result.length-depth];
 }
 
 void writeToFile(string filename, ASTNode* node)

@@ -7,6 +7,7 @@ import std.encoding;
 import std.string;
 import std.utf;
 import std.stdio;
+import std.typecons;
 
 class Lexer {
     dstring formula;
@@ -60,20 +61,26 @@ class Lexer {
         return (ch >= 'A' && ch <= 'Z');
     }
 
-    dstring readIdentifier()
+    // returns identifier, type
+    Tuple!(dstring, TokenType) readIdentifier()
     {
         int startPosition = position;
         while (isLowercaseLetter(ch)) {
             readChar();
         }
-        return formula[startPosition .. position];
+
+        if (ch == '(') {
+            return tuple(formula[startPosition .. position], TokenType.FUNCTION);
+        }
+
+        return tuple(formula[startPosition .. position], TokenType.VARIABLE);
     }
 
     dstring readQuantifierIdentifier()
     {
         int startPosition = position;
         readChar();
-        while (isLowercaseLetter(ch)) {
+        while (isLowercaseLetter(ch) || (ch >= '0' && ch <= '9')) {
             readChar();
         }
         return formula[startPosition+1 .. position];
@@ -124,8 +131,9 @@ class Lexer {
                 break;
             default:
                 if (isLowercaseLetter(ch)) {
-                    dstring literal = readIdentifier();
-                    TokenType tt = TokenType.VARIABLE;
+                    auto result = readIdentifier();
+                    dstring literal = result[0];
+                    TokenType tt = result[1];
                     return newToken(tt, literal);
                 } else if (ch == 'E' || ch == 'A') {
                     dchar quantifier = ch;

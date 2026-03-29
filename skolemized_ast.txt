@@ -4,7 +4,31 @@ ASTNode[
 			 type: Conjunction, left: ASTNode[
 				 type: Predicate, value: P, args: [
 					ASTNode[
-						 type: Variable, value: v0 
+						 type: Function, value: s, args: [
+							ASTNode[
+								 type: Function, value: s, args: [
+									ASTNode[
+										 type: Function, value: s, args: [
+											ASTNode[
+												 type: Function, value: s, args: [
+													ASTNode[
+														 type: Function, value: s, args: [
+															ASTNode[
+																 type: Function, value: s, args: [
+																	ASTNode[
+																		 type: Variable, value: v0 
+																	], 
+																] 
+															], 
+														] 
+													], 
+												] 
+											], 
+										] 
+									], 
+								] 
+							], 
+						] 
 					], 
 				] 
 			], right: ASTNode[

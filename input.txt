@@ -1,1 +1,1 @@
-AxEyAzEw(P(x) & P(y) & P(z) & P(w))
+(AxP(s(s(s(s(s(s(x))))))) & EyP(y) & AzP(z) & EwP(w))

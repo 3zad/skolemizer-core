@@ -33,7 +33,7 @@ struct Parser {
 
         if (check(TokenType.IMPLICATION)) {
             consume();
-            ASTNode* right = parseImplication(); // recurse instead of loop
+            ASTNode* right = parseImplication();
             return new ASTNode(NodeType.Implication, ""d, left, right);
         }
         return left;
@@ -69,15 +69,42 @@ struct Parser {
 
         while (!check(TokenType.RPAREN)) {
             Token t = consume();
-            args ~= new ASTNode(NodeType.Variable, t.literal, null, null);
+            if (check(TokenType.LPAREN)) {
+                args ~= parseFunction(t.literal);
+            } else {
+                args ~= parseVariable(t.literal);
+            }
+            if (check(TokenType.COMMA)) consume();
+        }
+        consume(); // RPAREN
+
+        ASTNode* node = new ASTNode(NodeType.Predicate, name, null, null);
+        node.args = args;
+        return node;
+    }
+
+    ASTNode* parseFunction(dstring name) {
+        consume();
+        ASTNode*[] args;
+
+        while (!check(TokenType.RPAREN)) {
+            Token t = consume();
+            if (check(TokenType.LPAREN)) {
+                args ~= parseFunction(t.literal);
+            } else {
+                args ~= parseVariable(t.literal);
+            }
             if (check(TokenType.COMMA)) consume();
         }
         consume();
 
-        // Store args as a linked list via left/right, or add an args field to ASTNode
-        ASTNode* node = new ASTNode(NodeType.Predicate, name, null, null);
+        ASTNode* node = new ASTNode(NodeType.Function, name, null, null);
         node.args = args;
         return node;
+    }
+
+    ASTNode* parseVariable(dstring name) {
+        return new ASTNode(NodeType.Variable, name, null, null);
     }
 
     ASTNode* parseNegation() {
@@ -112,18 +139,22 @@ struct Parser {
 
         Token t = consume();
 
-        if (t.tt == TokenType.VARIABLE) {
-            return new ASTNode(NodeType.Variable, t.literal, null, null);
-        }
-
         if (t.tt == TokenType.PREDICATE) {
             if (check(TokenType.LPAREN)) {
                 return parsePredicate(t.literal); // has args: P(x,y)
             }
-            // bare predicate with no args: P
-            ASTNode* node = new ASTNode(NodeType.Predicate, t.literal, null, null);
-            node.args = [];
-            return node;
+            throw new Exception("Unexpected predicate token without '(': " ~ cast(string)t.literal);
+        }
+
+        if (t.tt == TokenType.FUNCTION) {
+            if (check(TokenType.LPAREN)) {
+                return parseFunction(t.literal); // has args: f(x,y)
+            }
+            throw new Exception("Unexpected function token without '(': " ~ cast(string)t.literal);
+        }
+
+        if (t.tt == TokenType.VARIABLE) {
+            return parseVariable(t.literal);
         }
 
         assert(false, "Unexpected token: " ~ cast(string)t.literal);

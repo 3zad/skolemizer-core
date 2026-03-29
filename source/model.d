@@ -2,7 +2,7 @@ module model;
 
 import std.string : format;
 
-public enum NodeType { Negation, Universal, Existential, Conjunction, Disjunction, Implication, Biconditional, Variable, Predicate, SkolemFunction }
+public enum NodeType { Negation, Universal, Existential, Conjunction, Disjunction, Implication, Biconditional, Variable, Predicate, Function, SkolemFunction }
 
 public struct ASTNode {
     NodeType type;
@@ -14,7 +14,7 @@ public struct ASTNode {
     public string toString() const {
         if (type == NodeType.Variable) {
             return format("ASTNode[ type: %s, value: %s ]", type, value);
-        } else if (type == NodeType.Predicate || type == NodeType.SkolemFunction) {
+        } else if (type == NodeType.Predicate || type == NodeType.SkolemFunction || type == NodeType.Function) {
             string argsStr;
             foreach (arg; args) {
                 argsStr ~= arg.toString() ~ ", ";
