@@ -103,9 +103,6 @@ private ASTNode* standardizeVariables(ASTNode* node, ref int counter)
 {
     if (node is null) return null;
 
-    node.left  = standardizeVariables(node.left, counter);
-    node.right = standardizeVariables(node.right, counter);
-
     if (node.type == NodeType.Universal || node.type == NodeType.Existential) {
         dstring oldVar = node.value;
         // new var in the form of v0, v1, v2, etc.
@@ -114,6 +111,9 @@ private ASTNode* standardizeVariables(ASTNode* node, ref int counter)
 
         replaceVariable(node.left, oldVar, newVar);
     }
+
+    node.left  = standardizeVariables(node.left, counter);
+    node.right = standardizeVariables(node.right, counter);
 
     return node;
 }
@@ -219,7 +219,7 @@ private void replaceSkolemVariable(ASTNode* node, ASTNode* existentialNode, ASTN
 
     foreach (ref arg; node.args) {  // ref so we can replace
         if (arg.type == NodeType.Variable && arg.value == existentialNode.value) {
-            arg = skolemFunc;  // replace the whole node, not just the value
+            arg = skolemFunc;       // replace the whole node, not just the value
         } else {
             replaceSkolemVariable(arg, existentialNode, skolemFunc);
         }

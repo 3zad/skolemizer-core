@@ -4,7 +4,7 @@ ASTNode[
 			 type: Conjunction, left: ASTNode[
 				 type: Predicate, value: P, args: [
 					ASTNode[
-						 type: Variable, value: v0 
+						 type: Variable, value: v3 
 					], 
 				] 
 			], right: ASTNode[
@@ -12,7 +12,7 @@ ASTNode[
 					ASTNode[
 						 type: SkolemFunction, value: f0, args: [
 							ASTNode[
-								 type: Variable, value: v0 
+								 type: Variable, value: v3 
 							], 
 						] 
 					], 
@@ -21,7 +21,7 @@ ASTNode[
 		], right: ASTNode[
 			 type: Predicate, value: P, args: [
 				ASTNode[
-					 type: Variable, value: v2 
+					 type: Variable, value: v1 
 				], 
 			] 
 		] 
@@ -30,9 +30,9 @@ ASTNode[
 			ASTNode[
 				 type: SkolemFunction, value: f1, args: [
 					ASTNode[
-						 type: Variable, value: v0 
+						 type: Variable, value: v3 
 					], ASTNode[
-						 type: Variable, value: v2 
+						 type: Variable, value: v1 
 					], 
 				] 
 			], 
