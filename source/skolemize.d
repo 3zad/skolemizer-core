@@ -3,6 +3,7 @@ module skolemize;
 import std.stdio;
 import std.format;
 import std.utf;
+import std.typecons;
 
 import model;
 import parser;
@@ -15,9 +16,7 @@ public ASTNode* skolemizeNode(ASTNode* node)
     node = negationsInward(node);
     node = standardizeVariables(node);
     node = moveQuantifiersToFront(node);
-    // TODO:
-    // Move quantifiers to the front
-    // Eliminate existential quantifiers
+    node = eliminateExistentialQuantifiers(node);
     return node;
 }
 
@@ -137,7 +136,7 @@ private void replaceVariable(ASTNode* node, dstring oldVar, dstring newVar)
 }
 
 // Ax(P(x)) > Ey(P(y)) into AxEy(P(x) > P(y))
-private ASTNode* moveQuantifiersToFront(ASTNode* node)
+public ASTNode* moveQuantifiersToFront(ASTNode* node)
 {
     auto quantifiers = extractQuantifiers(node);
     node = removeQuantifiers(node);
@@ -174,5 +173,55 @@ private ASTNode* removeQuantifiers(ASTNode* node)
         return node.left; // skip the quantifier
     } else {
         return node;
+    }
+}
+
+public ASTNode* eliminateExistentialQuantifiers(ASTNode* node)
+{
+    ASTNode*[] uqList; // universal quantifier list
+    ASTNode*[] fList; // skolem function list
+
+    // formula should have all quantifiers at the front, so we can just collect them until we hit a non-quantifier
+    int i = 0;
+    while (node !is null && (node.type == NodeType.Universal || node.type == NodeType.Existential)) {
+        if (node.type == NodeType.Universal) {
+            uqList ~= node; // keep track of universal quantifiers for later
+        } else {
+            dstring skolemFuncName = format("f%d", i++).toUTF32();
+            ASTNode* possibleSkolemFunc = new ASTNode(NodeType.SkolemFunction, skolemFuncName, null, null);
+            ASTNode* args;
+            if (uqList.length > 0) {
+                foreach (uq; uqList) {
+                    possibleSkolemFunc.args ~= new ASTNode(NodeType.Variable, uq.value, null, null);
+                }
+            } else {
+                // generate fresh constant starting at a0, a1, a2, etc.
+                dstring constantName = format("a%d", i++).toUTF32();
+                possibleSkolemFunc = new ASTNode(NodeType.Variable, constantName, null, null);
+            }
+
+            replaceSkolemVariable(node.left, node, possibleSkolemFunc);
+        }
+        node = node.left;
+    }
+
+    node = removeQuantifiers(node);
+
+    return node;
+}
+
+private void replaceSkolemVariable(ASTNode* node, ASTNode* existentialNode, ASTNode* skolemFunc)
+{
+    if (node is null) return;
+
+    replaceSkolemVariable(node.left, existentialNode, skolemFunc);
+    replaceSkolemVariable(node.right, existentialNode, skolemFunc);
+
+    foreach (ref arg; node.args) {  // ref so we can replace
+        if (arg.type == NodeType.Variable && arg.value == existentialNode.value) {
+            arg = skolemFunc;  // replace the whole node, not just the value
+        } else {
+            replaceSkolemVariable(arg, existentialNode, skolemFunc);
+        }
     }
 }

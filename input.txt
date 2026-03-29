@@ -1,1 +1,1 @@
-Ax(P(x)) > Ex(P(x))
+AxEyAzEw(P(x) & P(y) & P(z) & P(w))

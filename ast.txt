@@ -1,18 +1,38 @@
 ASTNode[
-	 type: Implication, left: ASTNode[
-		 type: Universal, variable: x, body: ASTNode[
-			 type: Predicate, value: P, args: [
-				ASTNode[
-					 type: Variable, value: x 
-				], 
-			] 
-		] 
-	], right: ASTNode[
-		 type: Existential, variable: x, body: ASTNode[
-			 type: Predicate, value: P, args: [
-				ASTNode[
-					 type: Variable, value: x 
-				], 
+	 type: Universal, variable: x, body: ASTNode[
+		 type: Existential, variable: y, body: ASTNode[
+			 type: Universal, variable: z, body: ASTNode[
+				 type: Existential, variable: w, body: ASTNode[
+					 type: Conjunction, left: ASTNode[
+						 type: Conjunction, left: ASTNode[
+							 type: Conjunction, left: ASTNode[
+								 type: Predicate, value: P, args: [
+									ASTNode[
+										 type: Variable, value: x 
+									], 
+								] 
+							], right: ASTNode[
+								 type: Predicate, value: P, args: [
+									ASTNode[
+										 type: Variable, value: y 
+									], 
+								] 
+							] 
+						], right: ASTNode[
+							 type: Predicate, value: P, args: [
+								ASTNode[
+									 type: Variable, value: z 
+								], 
+							] 
+						] 
+					], right: ASTNode[
+						 type: Predicate, value: P, args: [
+							ASTNode[
+								 type: Variable, value: w 
+							], 
+						] 
+					] 
+				] 
 			] 
 		] 
 	] 

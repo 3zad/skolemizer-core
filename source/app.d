@@ -73,6 +73,17 @@ dstring toFormulaString(ASTNode* node, dstring result = "")
 				}
 				result ~= node.value ~ "(" ~ argsStr ~ ")";
 				break;
+			case NodeType.SkolemFunction:
+				dstring skolemArgsStr;
+				foreach (arg; node.args) {
+					skolemArgsStr ~= toFormulaString(arg) ~ ", ";
+				}
+				// remove trailing comma and space
+				if (skolemArgsStr.length >= 2) {
+					skolemArgsStr = skolemArgsStr[0 .. $ - 2];
+				}
+				result ~= node.value ~ "(" ~ skolemArgsStr ~ ")";
+				break;
 			default:
 				break;
 		}
