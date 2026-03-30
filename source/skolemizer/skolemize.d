@@ -1,12 +1,12 @@
-module skolemize;
+module skolemizer.skolemize;
 
 import std.stdio;
 import std.format;
 import std.utf;
 import std.typecons;
 
-import model;
-import parser;
+import skolemizer.model;
+import skolemizer.parser;
 
 
 public ASTNode* skolemizeNode(ASTNode* node)

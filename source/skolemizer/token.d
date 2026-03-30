@@ -1,4 +1,4 @@
-module token;
+module skolemizer.token;
 
 
 public enum TokenType {

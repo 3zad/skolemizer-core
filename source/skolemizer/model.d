@@ -1,4 +1,4 @@
-module model;
+module skolemizer.model;
 
 import std.string : format;
 

@@ -1,6 +1,6 @@
-module lexer;
+module skolemizer.lexer;
 
-import token;
+import skolemizer.token;
 import std.bitmanip;
 import std.conv;
 import std.encoding;
@@ -9,7 +9,13 @@ import std.utf;
 import std.stdio;
 import std.typecons;
 
-class Lexer {
+public Token[] tokenize(string formula)
+{
+    auto lexer = new Lexer(formula);
+    return lexer.tokenize();
+}
+
+private class Lexer {
     dstring formula;
     int position;
     int readPosition;

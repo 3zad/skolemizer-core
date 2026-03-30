@@ -1,12 +1,17 @@
-module parser;
+module skolemizer.parser;
 
-import token;
-import model;
+import skolemizer.token;
+import skolemizer.model;
 
 import std.stdio;
 
+public ASTNode* parse(Token[] tokens) {
+    auto parser = Parser(tokens);
+    return parser.parse();
+}
+
 // order of operations: Negation > Conjunction > Disjunction > Implication > Biconditional
-struct Parser {
+private struct Parser {
     Token[] tokens;
     size_t  pos;
 

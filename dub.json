@@ -1,9 +1,19 @@
 {
-	"authors": [
-		"Zachary A. Davis"
-	],
+	"authors": ["Zachary A. Davis"],
 	"copyright": "Copyright © 2026, Zachary A. Davis",
-	"description": "A project for the Logic in Computer Science course.",
+	"description": "A Skolemization library for first-order logic formulas",
 	"license": "proprietary",
-	"name": "skolemizer"
+	"name": "skolemizer",
+	"targetType": "library",
+	"configurations": [
+		{
+			"name": "library",
+			"targetType": "library"
+		},
+		{
+			"name": "demo",
+			"targetType": "executable",
+			"mainSourceFile": "source/app.d"
+		}
+	]
 }

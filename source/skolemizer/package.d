@@ -1,31 +1,60 @@
+module skolemizer;
+
 import std.stdio;
 import std.file;
-import std.conv;
 
-import parser;
-import lexer;
-import token;
-import skolemize;
-import model;
-import std.string;
+public import skolemizer.lexer;
+public import skolemizer.parser;
+public import skolemizer.skolemize;
+public import skolemizer.model;
+public import skolemizer.token;
 
-void main()
-{
-	string f = cast(string)read("input.txt");
-	auto lexer = new Lexer(f);
-	auto ts = lexer.tokenize();
-	auto parser = Parser(ts);
-	auto ast = parser.parse();
-
-	writeToFile("ast.txt", ast);
-
-	auto sAST = *(skolemizeNode(ast));
-
-	writeToFile("skolemized_ast.txt", &sAST);
-
-	writeln(toFormulaString(&sAST));	
+/// Skolemize a formula given as a string
+public ASTNode* parseFormula(string input) {
+    auto tokens = tokenize(input);
+    return parse(tokens);
 }
 
+/// Skolemize a formula given as a string
+public ASTNode* skolemizeFormula(string input) {
+    auto tokens = tokenize(input);
+    auto ast = parse(tokens);
+    return skolemizeNode(ast);
+}
+
+/// Skolemize a formula given as an AST
+public ASTNode* skolemizeFormula(ASTNode* ast) {
+    return skolemizeNode(ast);
+}
+
+/// Write AST to a file with indentation
+public void writeToFile(string filename, ASTNode* node)
+{
+	auto file = File(filename, "w");
+	scope(exit) file.close();
+	string content = node.toString();
+	int depth = 0;
+	char prev = '\0';
+	foreach (c; content) {
+		if (prev == '[') {
+			depth++;
+			file.write('\n');
+			for (int i = 0; i < depth; i++) {
+				file.write("\t");
+			}
+		} else if (c == ']') {
+			depth--;
+			file.write('\n');
+			for (int i = 0; i < depth; i++) {
+				file.write("\t");
+			}
+		}
+		file.write(c);
+		prev = c;
+	}
+}
+
+/// Convert AST to a human-readable formula string
 dstring toFormulaString(ASTNode* node, dstring result = "")
 {
 	if (node is null) {
@@ -113,30 +142,4 @@ dstring toFormulaString(ASTNode* node, dstring result = "")
 	}
 
 	return result[depth..result.length-depth];
-}
-
-void writeToFile(string filename, ASTNode* node)
-{
-	auto file = File(filename, "w");
-	scope(exit) file.close();
-	string content = node.toString();
-	int depth = 0;
-	char prev = '\0';
-	foreach (c; content) {
-		if (prev == '[') {
-			depth++;
-			file.write('\n');
-			for (int i = 0; i < depth; i++) {
-				file.write("\t");
-			}
-		} else if (c == ']') {
-			depth--;
-			file.write('\n');
-			for (int i = 0; i < depth; i++) {
-				file.write("\t");
-			}
-		}
-		file.write(c);
-		prev = c;
-	}
 }
