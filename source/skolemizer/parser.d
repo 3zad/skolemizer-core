@@ -28,7 +28,13 @@ private struct Parser {
         if (check(TokenType.BICONDITIONAL)) {
             consume();
             ASTNode* right = parseBiconditional();
-            return new ASTNode(NodeType.Biconditional, ""d, left, right);
+
+            // rewrite to skip the double implication step
+            ASTNode* notLeft  = new ASTNode(NodeType.Negation, ""d, left,  null);
+            ASTNode* notRight = new ASTNode(NodeType.Negation, ""d, right, null);
+            ASTNode* disj1    = new ASTNode(NodeType.Disjunction, ""d, notLeft,  right);
+            ASTNode* disj2    = new ASTNode(NodeType.Disjunction, ""d, notRight, left);
+            return new ASTNode(NodeType.Conjunction, ""d, disj1, disj2);
         }
         return left;
     }

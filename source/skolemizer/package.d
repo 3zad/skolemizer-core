@@ -161,4 +161,12 @@ unittest {
 	string formula = "AxEyAzEw(P(s(x)) > (P(y)&P(w) > !P(s(z)))))";
 	dstring skolemized = toFormulaString(skolemizeFormula(formula));
 	assert(skolemized == "not P(s(v0)) or not P(f0(v0)) or not P(f1(v0, v2)) or not P(s(v2))");
+
+	formula = "Ax(P(x) = R(x))";
+	skolemized = toFormulaString(skolemizeFormula(formula));
+	assert(skolemized == "not P(v0) or R(v0) and not R(v0) or P(v0)");
+
+	formula = "Ax((P(x) > R(x)) & (R(x) > P(x)))";
+	skolemized = toFormulaString(skolemizeFormula(formula));
+	assert(skolemized == "not P(v0) or R(v0) and not R(v0) or P(v0)");
 }
