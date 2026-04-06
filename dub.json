@@ -1,19 +1,23 @@
 {
-	"authors": ["Zachary A. Davis"],
-	"copyright": "Copyright © 2026, Zachary A. Davis",
-	"description": "A Skolemization library for first-order logic formulas",
-	"license": "proprietary",
-	"name": "skolemizer",
-	"targetType": "library",
+	"authors": [
+		"Zachary A. Davis"
+	],
 	"configurations": [
 		{
 			"name": "library",
 			"targetType": "library"
 		},
 		{
+			"mainSourceFile": "source/app.d",
 			"name": "demo",
-			"targetType": "executable",
-			"mainSourceFile": "source/app.d"
+			"targetType": "executable"
 		}
-	]
+	],
+	"copyright": "Copyright © 2026, Zachary A. Davis",
+	"dependencies": {
+	},
+	"description": "A Skolemization library for first-order logic formulas",
+	"license": "proprietary",
+	"name": "skolemizer",
+	"targetType": "library"
 }

@@ -29,3 +29,12 @@ public struct ASTNode {
         }
     }
 }
+
+public hash_t hashOfASTNode(const ASTNode* node) {
+    if (node is null) return 0;
+    return cast(hash_t)cast(size_t)node;
+}
+
+public bool opEqualsASTNode(const ASTNode* a, const ASTNode* b) {
+    return a is b;
+}
