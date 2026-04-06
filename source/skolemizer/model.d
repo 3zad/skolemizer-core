@@ -2,6 +2,9 @@ module skolemizer.model;
 
 import std.string : format;
 
+import std.algorithm;
+import std.array;
+
 public enum NodeType { Negation, Universal, Existential, Conjunction, Disjunction, Implication, Biconditional, Variable, Predicate, Function, SkolemFunction }
 
 public struct ASTNode {
@@ -37,4 +40,14 @@ public hash_t hashOfASTNode(const ASTNode* node) {
 
 public bool opEqualsASTNode(const ASTNode* a, const ASTNode* b) {
     return a is b;
+}
+
+public ASTNode* cloneAST(const ASTNode* node) {
+    if (node is null) return null;
+
+    auto copy = new ASTNode(node.type, node.value);
+    copy.left = cloneAST(node.left);
+    copy.right = cloneAST(node.right);
+    copy.args = node.args.map!(arg => cloneAST(arg)).array;
+    return copy;
 }

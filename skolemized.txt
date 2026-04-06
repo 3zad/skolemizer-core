@@ -1,0 +1,27 @@
+ASTNode[
+	 type: Conjunction, left: ASTNode[
+		 type: Disjunction, left: ASTNode[
+			 type: Variable, value: d 
+		], right: ASTNode[
+			 type: Conjunction, left: ASTNode[
+				 type: Conjunction, left: ASTNode[
+					 type: Conjunction, left: ASTNode[
+						 type: Variable, value: a 
+					], right: ASTNode[
+						 type: Variable, value: b 
+					] 
+				], right: ASTNode[
+					 type: Variable, value: c 
+				] 
+			], right: ASTNode[
+				 type: Negation, operand: ASTNode[
+					 type: Variable, value: a 
+				] 
+			] 
+		] 
+	], right: ASTNode[
+		 type: Negation, operand: ASTNode[
+			 type: Variable, value: d 
+		] 
+	] 
+]
