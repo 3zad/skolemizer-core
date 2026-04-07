@@ -48,28 +48,4 @@ unittest {
 	formula = "∀x((P(x) → R(x)) & (R(x) → P(x)))";
 	skolemized = toFormulaString(skolemizeFormula(formula));
 	assert(skolemized.replace(" "d, ""d) == "¬P(v0) ∨ R(v0) & ¬R(v0) ∨ P(v0)"d.replace(" "d, ""d));
-
-    import std.stdio;
-    import skolemizer.lexer;
-    import skolemizer.parser;
-    import skolemizer.model;
-    import skolemizer.skolemize;
-	import skolemizer.resolve;
-
-    auto tokens = tokenize("a ∧ b ∧ c");
-    auto ast = parse(tokens);
-    auto clauses = toDisjunctForm(ast);
-
-    writeln(toSetString(clauses));
-
-    tokens = tokenize("(d ∨ (a ∧ b ∧ c ∧ !a)) ∧ !d");
-	ast = parse(tokens);
-	auto skolem = skolemizeNode(ast);
-	writeln(toFormulaString(skolem));
-
-    clauses = toDisjunctForm(skolem);
-
-    writeln(toSetString(clauses));
-
-    writeln(naiveSAT(clauses));
 }

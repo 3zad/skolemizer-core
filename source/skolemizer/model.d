@@ -47,20 +47,22 @@ public struct ASTNode {
     }
 }
 
+private hash_t hashCombine(hash_t seed, hash_t value) {
+    // fewer collisions compared to a simple XOR
+    return seed ^ (value + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+}
+
 public hash_t hashOfASTNode(const ASTNode* node) {
     if (node is null) return 0;
 
     hash_t h = 0;
-
-    h ^= node.type.hashOf();
-
-    h ^= node.value.hashOf();
-
-    h ^= hashOfASTNode(node.left);
-    h ^= hashOfASTNode(node.right);
+    h = hashCombine(h, node.type.hashOf());
+    h = hashCombine(h, node.value.hashOf());
+    h = hashCombine(h, hashOfASTNode(node.left));
+    h = hashCombine(h, hashOfASTNode(node.right));
 
     foreach (arg; node.args) {
-        h ^= hashOfASTNode(arg);
+        h = hashCombine(h, hashOfASTNode(arg));
     }
 
     return h;
@@ -119,4 +121,15 @@ unittest
     node8.args ~= node2;
     assert(opEqualsASTNode(node7, node8));
     assert(hashOfASTNode(node7) == hashOfASTNode(node8));
+
+    // a and not a
+    auto node9 = new ASTNode(NodeType.Negation, "", new ASTNode(NodeType.Variable, "a"), null);
+    auto node10 = new ASTNode(NodeType.Variable, "a");
+    assert(!opEqualsASTNode(node9, node10));
+    assert(hashOfASTNode(node9) != hashOfASTNode(node10));
+
+    auto node11 = new ASTNode(NodeType.Conjunction, "", node9, node9);
+    auto node12 = new ASTNode(NodeType.Conjunction, "", node10, node10);
+    assert(!opEqualsASTNode(node11, node12));
+    assert(hashOfASTNode(node11) != hashOfASTNode(node12));
 }

@@ -66,6 +66,48 @@ public DPLLResult naiveSAT(ASTNode*[hash_t][hash_t] clauses)
     return allSatisfied ? DPLLResult.Satisfiable : DPLLResult.Unsatisfiable;
 }
 
+unittest {
+    import skolemizer.lexer;
+    import skolemizer.parser;
+
+    auto tokens = tokenize("a & !a");
+	auto ast = parse(tokens);
+	auto skolem = skolemizeNode(ast);
+    auto clauses = toDisjunctForm(skolem);
+
+    assert(naiveSAT(clauses) == DPLLResult.Unsatisfiable);
+
+    tokens = tokenize("a | !a");
+    ast = parse(tokens);
+    skolem = skolemizeNode(ast);
+    clauses = toDisjunctForm(skolem);
+    assert(naiveSAT(clauses) == DPLLResult.Satisfiable);
+
+    tokens = tokenize("(a ∨ b) ∧ (¬a ∨ b) ∧ (a ∨ ¬b) ∧ (¬a ∨ ¬b)");
+    ast = parse(tokens);
+    skolem = skolemizeNode(ast);
+    clauses = toDisjunctForm(skolem);
+    assert(naiveSAT(clauses) == DPLLResult.Unsatisfiable);
+
+    tokens = tokenize("a ⟶ b ⟶ a");
+    ast = parse(tokens);
+    skolem = skolemizeNode(ast);
+    clauses = toDisjunctForm(skolem);
+    assert(naiveSAT(clauses) == DPLLResult.Satisfiable);
+
+    tokens = tokenize("¬(a | ¬a)");
+    ast = parse(tokens);
+    skolem = skolemizeNode(ast);
+    clauses = toDisjunctForm(skolem);
+    assert(naiveSAT(clauses) == DPLLResult.Unsatisfiable);
+
+    tokens = tokenize("a ⟷ ¬a");
+    ast = parse(tokens);
+    skolem = skolemizeNode(ast);
+    clauses = toDisjunctForm(skolem);
+    assert(naiveSAT(clauses) == DPLLResult.Unsatisfiable);
+}
+
 private bool evaluateVariable(ASTNode* clause, ASTNode*[] variables, bool[] assignment)
 {
     if (variables.length != assignment.length) {
