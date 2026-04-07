@@ -71,5 +71,9 @@ unittest {
 
     writeln(toSetString(clauses));
 
-    writeln(DPLL(clauses));
+    foreach (var; getVariables(clauses)) {
+        writeln("Clause: " ~ toFormulaString(var));
+    }
+
+    //writeln(DPLL(clauses));
 }

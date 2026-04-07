@@ -42,7 +42,28 @@ DPLLResult DPLL(ASTNode*[hash_t][hash_t] clauses)
     return DPLLResult.Satisfiable;
 }
 
-
+public ASTNode*[] getVariables(ASTNode*[hash_t][hash_t] clauses)
+{
+    ASTNode*[size_t] hashSet;
+    foreach (key, clause; clauses) {
+        foreach (key2, clause2; clause)
+        {
+            if (clause2.type == NodeType.Variable) {
+                hashSet[hashOfASTNode(clause2)] = clause2;
+            } else if (clause2.type == NodeType.Negation)
+            {
+                hashSet[hashOfASTNode(clause2.left)] = clause2.left;
+            } else {
+                throw new Exception("Unidentified nodetype '" ~ cast(string)(clause2.type) ~ "'");
+            }
+        }
+    }
+    ASTNode*[] result;
+    foreach (key, value; hashSet) {
+        result ~= value;
+    }
+    return result;
+}
 
 
 

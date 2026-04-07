@@ -5,7 +5,21 @@ import std.string : format;
 import std.algorithm;
 import std.array;
 
-public enum NodeType { Negation, Universal, Existential, Conjunction, Disjunction, Implication, Biconditional, Variable, Predicate, Function, SkolemFunction }
+public enum NodeType 
+{ 
+    Negation = "Negation", 
+    Universal = "Universal", 
+    Existential = "Existential", 
+    Conjunction = "Conjunction", 
+    Disjunction = "Disjunction", 
+    Implication = "Implication", 
+    Biconditional = "Biconditional", 
+    Variable = "Variable", 
+    Predicate = "Predicate", 
+    Function = "Function", 
+    SkolemFunction = "SkolemFunction" 
+}
+
 
 public struct ASTNode {
     NodeType type;
