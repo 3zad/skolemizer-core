@@ -106,6 +106,25 @@ unittest {
     skolem = skolemizeNode(ast);
     clauses = toDisjunctForm(skolem);
     assert(naiveSAT(clauses) == DPLLResult.Unsatisfiable);
+
+    tokens = tokenize("((a ∨ ¬a) ∧ (b ∨ ¬b) ∧ (c ∨ ¬c) ∧ (d ∨ ¬d))
+                        ∧ ((a ∨ b ∨ ¬a ∨ ¬b) ∧ (c ∨ d ∨ ¬c ∨ ¬d))
+                        ∧ ((a ∧ b) → (a ∨ b))
+                        ∧ ((c ∧ d) → (c ∨ d))
+                        ∧ ((a → b) ∨ (b → a))
+                        ∧ ((a ↔ a) ∧ (b ↔ b) ∧ (c ↔ c) ∧ (d ↔ d))");
+    ast = parse(tokens);
+    skolem = skolemizeNode(ast);
+    clauses = toDisjunctForm(skolem);
+    assert(naiveSAT(clauses) == DPLLResult.Satisfiable);
+
+    tokens = tokenize("((a ∧ ¬a) ∨ (b ∧ ¬b))
+                        ∧ ((c ∧ ¬c) ∨ (d ∧ ¬d))
+                        ∧ ((a ∧ ¬a) ∧ (b ∧ ¬b) ∧ (c ∧ ¬c) ∧ (d ∧ ¬d))");
+    ast = parse(tokens);
+    skolem = skolemizeNode(ast);
+    clauses = toDisjunctForm(skolem);
+    assert(naiveSAT(clauses) == DPLLResult.Unsatisfiable);
 }
 
 private bool evaluateVariable(ASTNode* clause, ASTNode*[] variables, bool[] assignment)
