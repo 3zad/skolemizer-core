@@ -1,6 +1,7 @@
 module skolemizer.parser;
 
 import skolemizer.token;
+import skolemizer.lexer;
 import skolemizer.model;
 
 import std.stdio;
@@ -307,6 +308,12 @@ public void writeToFile(string filename, ASTNode* node)
 		file.write(c);
 		prev = c;
 	}
+}
+
+/// Skolemize a formula given as a string
+public ASTNode* parseFormula(string input) {
+    auto tokens = tokenize(input);
+    return parse(tokens);
 }
 
 unittest {

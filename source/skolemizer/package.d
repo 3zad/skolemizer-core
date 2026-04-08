@@ -20,12 +20,6 @@ public DPLLResult isSatisfiable(string formula) {
 }
 
 /// Skolemize a formula given as a string
-public ASTNode* parseFormula(string input) {
-    auto tokens = tokenize(input);
-    return parse(tokens);
-}
-
-/// Skolemize a formula given as a string
 public ASTNode* skolemizeFormula(string input) {
     auto tokens = tokenize(input);
     auto ast = parse(tokens);
@@ -58,6 +52,8 @@ unittest {
 	assert(skolemized.replace(" "d, ""d) == "¬P(v0) ∨ R(v0) & ¬R(v0) ∨ P(v0)"d.replace(" "d, ""d));
 
     formula = "¬((a&b⟶c)⟶(a&c⟶d)⟶(b&d⟶e)⟶a&b⟶e)";
-    skolemized = toFormulaString(skolemizeFormula(formula));
-    writeln(skolemized);
+    assert(checkHornClause(parseFormula(formula)) == true);
+
+    formula = "(a|b) & (¬a|b)";
+    assert(checkHornClause(parseFormula(formula)) == false);
 }

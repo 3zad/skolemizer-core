@@ -42,6 +42,36 @@ DPLLResult DPLL(ASTNode*[hash_t][hash_t] clauses)
     return DPLLResult.Satisfiable;
 }
 
+public bool checkHornClause(ASTNode* clause)
+{
+    // ¬((a&b⟶c)⟶(a&c⟶d)⟶(b&d⟶e)⟶a&b⟶e)
+    auto cnf = toDisjunctForm(clause);
+    foreach (key, disjuncts; cnf) {
+        int numPositiveLiterals = 0;
+        foreach (variable, disjunct; disjuncts) {
+            if (disjunct.type == NodeType.Variable) {
+                numPositiveLiterals++;
+            } else if (disjunct.type == NodeType.Negation) {
+                // explicicity
+            } else {
+                throw new Exception("Unsupported node type in disjunct: " ~ cast(string)(disjunct.type));
+            }
+        }
+        if (numPositiveLiterals > 1) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// Ditto
+public bool checkHornClause(string formula)
+{
+    auto ast = parseFormula(formula);
+    return checkHornClause(ast);
+}
+
 public DPLLResult naiveSAT(ASTNode*[hash_t][hash_t] clauses)
 {
     ASTNode*[] variables = getVariables(clauses);
@@ -204,6 +234,13 @@ public ASTNode*[hash_t][hash_t] toDisjunctForm(ASTNode* node)
         disjunctClauses[hash] = disjunctSet;
     }
     return disjunctClauses;
+}
+
+// Ditto
+public ASTNode*[hash_t][hash_t] toDisjunctForm(string formula)
+{
+    auto ast = parseFormula(formula);
+    return toDisjunctForm(ast);
 }
 
 public ASTNode* distribute(ASTNode* node) {
