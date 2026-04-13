@@ -13,7 +13,7 @@ import std.sumtype;
 enum SatResult { Satisfiable = "Satisfiable", Unsatisfiable = "Unsatisfiable", Unknown = "Unknown" }
 
 
-SatResult SLDResolve(ASTNode*[hash_t][hash_t] clauses)
+public SatResult SLDResolve(ASTNode*[hash_t][hash_t] clauses)
 {
     if (!checkHornClause(clauses)) {
         throw new Exception("Clauses must be in Horn form for SLD resolution");
@@ -50,7 +50,7 @@ SatResult SLDResolve(ASTNode*[hash_t][hash_t] clauses)
     return SatResult.Satisfiable;
 }
 
-bool dfsSolve(ASTNode*[hash_t] currentGoal, 
+private bool dfsSolve(ASTNode*[hash_t] currentGoal, 
               ASTNode*[hash_t][hash_t] facts, 
               ASTNode*[hash_t][hash_t] rules) 
 {
@@ -83,7 +83,7 @@ bool dfsSolve(ASTNode*[hash_t] currentGoal,
     return false;
 }
 
-bool matches(ASTNode*[hash_t] fact, hash_t targetLiteralHash) {
+private bool matches(ASTNode*[hash_t] fact, hash_t targetLiteralHash) {
     foreach (node; fact) {
         if (isPositiveLiteral(node)) {
             return hashOfASTNode(node) == targetLiteralHash;
@@ -92,7 +92,7 @@ bool matches(ASTNode*[hash_t] fact, hash_t targetLiteralHash) {
     return false;
 }
 
-bool matchesHead(ASTNode*[hash_t] rule, hash_t targetLiteralHash) {
+private bool matchesHead(ASTNode*[hash_t] rule, hash_t targetLiteralHash) {
     foreach (node; rule) {
         if (isPositiveLiteral(node)) {
             return hashOfASTNode(node) == targetLiteralHash;
@@ -101,7 +101,7 @@ bool matchesHead(ASTNode*[hash_t] rule, hash_t targetLiteralHash) {
     return false;
 }
 
-ASTNode*[] getBody(ASTNode*[hash_t] rule) {
+private ASTNode*[] getBody(ASTNode*[hash_t] rule) {
     ASTNode*[] bodyNodes;
     foreach (node; rule) {
         if (isNegativeLiteral(node)) {
@@ -111,7 +111,7 @@ ASTNode*[] getBody(ASTNode*[hash_t] rule) {
     return bodyNodes;
 }
 
-ASTNode*[hash_t] copyGoal(ASTNode*[hash_t] goal) {
+private ASTNode*[hash_t] copyGoal(ASTNode*[hash_t] goal) {
     ASTNode*[hash_t] newGoal;
     foreach (k, v; goal) {
         newGoal[k] = v;
